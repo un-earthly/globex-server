@@ -1,31 +1,45 @@
-const addToCartModel = require('../../models/cartProduct.js');
+const OrderModel = require("../../models/order");
 
-const cartController = async (req, res) => {
+const orderController = async (req, res) => {
 	try {
-		const { productId, quantity, userId, shippingAddress, paymentMethod } =
-			req.body;
+		const { userId, items, shippingAddress, paymentMethod } = req.body;
 
-		// Create a new cart item
-		const newCartItem = new addToCartModel({
-			productId,
-			quantity,
+		if (!userId) {
+			return res.status(400).json({
+				message: 'User ID is required',
+				success: false,
+				error: true,
+			});
+		}
+
+		if (!Array.isArray(items) || items.length === 0) {
+			return res.status(400).json({
+				message: 'No items found in the order',
+				success: false,
+				error: true,
+			});
+		}
+
+		// Create a new order with the provided data
+		const newOrder = new OrderModel({
 			userId,
+			items,
 			shippingAddress,
 			paymentMethod,
 		});
 
-		// Save the cart item to the database
-		const savedCartItem = await newCartItem.save();
+		// Save the order to the database
+		const savedOrder = await newOrder.save();
 
 		res.status(201).json({
-			data: savedCartItem,
-			message: 'Item added to cart successfully',
+			data: savedOrder,
+			message: 'Order placed successfully',
 			success: true,
 			error: false,
 		});
 	} catch (error) {
 		res.status(500).json({
-			message: 'Error adding item to cart',
+			message: 'Error placing order',
 			errorMessage: error.message,
 			error: true,
 			success: false,
@@ -33,4 +47,4 @@ const cartController = async (req, res) => {
 	}
 };
 
-module.exports = cartController;
+module.exports = orderController;

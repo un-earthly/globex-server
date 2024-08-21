@@ -1,41 +1,53 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-async function authToken(req,res,next){
-    try{
-        const token = req.cookies?.token
+async function authToken(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
 
-        console.log("token",token)
-        if(!token){
-            return res.status(200).json({
-                message : "Please Login...!",
-                error : true,
-                success : false
-            })
+        console.log("Authorization Header:", authHeader);
+
+        if (!authHeader) {
+            return res.status(401).json({
+                message: "Authorization header is missing. Please provide a token.",
+                error: true,
+                success: false
+            });
         }
 
-        jwt.verify(token, process.env.TOKEN_SECRET_KEY, function(err, decoded) {
-            console.log(err)
-            console.log("decoded",decoded)
-            
-            if(err){
-                console.log("error auth", err)
+        const token = authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({
+                message: "Token is missing. Please provide a valid token.",
+                error: true,
+                success: false
+            });
+        }
+
+        jwt.verify(token, process.env.TOKEN_SECRET_KEY, function (err, decoded) {
+            if (err) {
+                console.log("JWT verification error:", err);
+                return res.status(403).json({
+                    message: "Invalid token. Authentication failed.",
+                    error: true,
+                    success: false
+                });
             }
 
-            req.userId = decoded?._id
+            console.log("Decoded token:", decoded);
+            req.userId = decoded?._id;
 
-            next()
+            next();
         });
 
-
-    }catch(err){
+    } catch (err) {
         res.status(400).json({
-            message : err.message || err,
-            data : [],
-            error : true,
-            success : false
-        })
+            message: err.message || err,
+            data: [],
+            error: true,
+            success: false
+        });
     }
 }
 
-
-module.exports = authToken
+module.exports = authToken;

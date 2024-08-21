@@ -13,7 +13,7 @@ const UploadProductController = require('../controller/product/uploadProduct');
 const { getProductController, getDealOfTheDayController } = require('../controller/product/getProduct');
 const updateProductController = require('../controller/product/updateProduct');
 const getCategoryProduct = require('../controller/product/getCategoryProductOne');
-const {getCategoryWiseProduct, getSubcategoryItems} = require('../controller/product/getCategoryWiseProduct');
+const { getCategoryWiseProduct, getSubcategoryItems } = require('../controller/product/getCategoryWiseProduct');
 const getProductDetails = require('../controller/product/getProductDetails');
 const addToCartController = require('../controller/user/addToCartController');
 const countAddToCartProduct = require('../controller/user/countAddToCartProduct');
@@ -22,12 +22,12 @@ const updateAddToCartProduct = require('../controller/user/updateAddToCartProduc
 const deleteAddToCartProduct = require('../controller/user/deleteAddToCartProduct');
 const searchProduct = require('../controller/product/searchProduct');
 const filterProductController = require('../controller/product/filterProduct');
-const cartController = require('../controller/cart/cartController');
-const getAllCartController = require('../controller/cart/getAllCartController');
+const { getAllOrdersController,getOrderDetailsController} = require('../controller/cart/getAllCartController');
 const {
 	addCategory,
 } = require('../controller/category/createCategoryController');
 const { getAllCategories } = require('../controller/category/getAllCategoriesController');
+const checkoutController = require('../controller/cart/cartController');
 
 router.post('/signup', userSignUpController);
 router.post('/signin', userSignInController);
@@ -55,8 +55,9 @@ router.get('/search', searchProduct);
 router.post('/filter-product', filterProductController);
 
 //user add to cart
-router.post('/addtocart', authToken, cartController);
-router.get('/get-all-cart-items', authToken, getAllCartController);
+router.post('/checkout', authToken, checkoutController);
+router.get('/get-all-orders', authToken, getAllOrdersController);
+router.get('/get-order/:id', authToken, getOrderDetailsController);
 router.get('/countAddToCartProduct', authToken, countAddToCartProduct);
 // router.get('/view-card-product', authToken, addToCartViewProduct);
 // router.post('/update-cart-product', authToken, updateAddToCartProduct);
